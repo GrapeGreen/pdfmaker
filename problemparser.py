@@ -66,6 +66,10 @@ class ProblemParser:
         raise FileNotFoundError("Couldn't find any statement files"
                                 " for problem {}.".format(self._link))
 
+    def latex(self):
+        return '\probl{{{}}}{{{}}}{{{} sec}}{{{} mb}}'.format(
+            self._name, self._id, self._tl, self._ml)
+
 
 class ProblemParserPb(ProblemParser):
     def __init__(self, problem_str):
@@ -75,6 +79,7 @@ class ProblemParserPb(ProblemParser):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         self._id, self._name = params[:2]
+        print('Parsing problem {}: {}'.format(self._id, self._name))
         # This particular problem type targets everything under burunduk1/problems/yyyy-mm/<problem>.
         self._link = os.path.join('burunduk1', 'problems', params[3], params[2])
         self._tl = ProblemParser.normalize_tl(params[-2])
@@ -90,11 +95,13 @@ class ProblemParserProbdef(ProblemParser):
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         # Trim " where applicable.
         self._id, self._name, self._link = [x[1:-1] for x in params[:3]]
+        print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])
         self._ml = ProblemParser.normalize_ml(params[-1])
 
 
 def problem_type(problem_str):
+    # The list of supported types can be found in ProblemType enum.
     for problem_type in ProblemType:
         regex = '{}\d{{0,1}} *\("'.format(problem_type.name)
         if re.match(regex, problem_str):
