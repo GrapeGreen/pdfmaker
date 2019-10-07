@@ -49,6 +49,23 @@ class ProblemParser:
     def ml(self):
         return self._ml
 
+    def statements(self):
+        root_link = os.path.join('D:', 'problems', self._link)
+        for curr_folder, dirs, files in os.walk(root_link):
+            # TODO: search everywhere and not only in the first occurrence.
+            if 'statement' in curr_folder:
+                if len(files) == 0:
+                    break
+                if len(files) == 1:
+                    return os.path.join(curr_folder, files[0])
+                if len(files) > 1:
+                    raise NotImplementedError("There is more than one statement "
+                                              "file for problem {}. Currently we "
+                                              "are unable to decide on such cases."
+                                              .format(self._link))
+        raise FileNotFoundError("Couldn't find any statement files"
+                                " for problem {}.".format(self._link))
+
 
 class ProblemParserPb(ProblemParser):
     def __init__(self, problem_str):
