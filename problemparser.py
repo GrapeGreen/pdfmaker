@@ -109,7 +109,7 @@ def get_problem_type(problem_str):
 
 
 def create(problem_str, problem_type):
-    if problem_type == ProblemType.pb:
-        return ProblemParserPb(problem_str)
-    elif problem_type == ProblemType.probdef:
-        return ProblemParserProbdef(problem_str)
+    problem_class_name = 'ProblemParser{}'.format(problem_type.name.capitalize())
+    if problem_class_name not in globals():
+        raise NotImplementedError('No ProblemParser definition for {}.'.format(problem_type.name))
+    return globals()[problem_class_name](problem_str)
