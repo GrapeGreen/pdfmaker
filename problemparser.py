@@ -100,7 +100,7 @@ class ProblemParserProbdef(ProblemParser):
         self._ml = ProblemParser.normalize_ml(params[-1])
 
 
-def problem_type(problem_str):
+def get_problem_type(problem_str):
     # The list of supported types can be found in ProblemType enum.
     for problem_type in ProblemType:
         regex = '{}\d{{0,1}} *\("'.format(problem_type.name)
