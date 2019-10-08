@@ -34,7 +34,6 @@ class Section:
         colors_tex = os.path.join(script_path, 'src', 'colors.tex')
         with open(colors_tex, 'r') as f:
             for line in map(lambda x: x.strip(), f):
-                print(line)
                 Section.palette.add(re.findall('definecolor{(.*?)}', line)[0])
 
     predefined_sections = {'Easy' : 'limegreen',

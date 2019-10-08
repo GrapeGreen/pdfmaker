@@ -1,5 +1,6 @@
 import re, os, sys, shutil, subprocess
 import problemparser, colors
+import traceback
 
 
 def verify_structure(script_path):
@@ -86,9 +87,10 @@ def copy_sources(script_path):
 
 def create_pdf(script_path):
     source_dir = os.path.join(script_path, 'temp')
-    for _ in range(2):
-        subprocess.run("cd {} && echo 'X' | pdflatex statement.tex".format(source_dir),
+    subprocess.run("cd {} && echo 'X' | pdflatex statement.tex > nul".format(source_dir),
                        shell = True)
+    subprocess.run("cd {} && echo 'X' | pdflatex statement.tex | grep 'Output written'".format(source_dir),
+                   shell = True)
     if not os.path.isfile(os.path.join(script_path, 'temp', 'statement.pdf')):
         raise FileNotFoundError("Unable to create statement.pdf from sources.")
     shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
@@ -109,9 +111,9 @@ def main():
         create_problemset_info(script_path)
         create_pdf(script_path)
     except Exception as e:
-        print(e)
-
-    #clear_temp(script_path)
+        traceback.print_exc()
+    finally:
+        clear_temp(script_path)
 
 
 if __name__ == '__main__':
