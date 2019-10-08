@@ -53,6 +53,8 @@ class ProblemParser:
         for curr_folder, dirs, files in os.walk(root_link):
             # TODO: search everywhere and not only in the first occurrence.
             if 'statement' in curr_folder:
+                files = [x for x in files if x.endswith('.tex')]
+                print(files)
                 if len(files) == 0:
                     break
                 if len(files) == 1:
