@@ -18,7 +18,7 @@ def get_contest_name_and_date():
     if not os.path.isfile(contest_cfg):
         raise FileNotFoundError("There's no contest.cfg in {}.".format(os.getcwd()))
 
-    date = '.'.join(re.findall('(\d{2})', os.getcwd())[:3][::-1])
+    date = '.'.join(re.findall('(\d{2})', re.split('[\/\\]', os.getcwd())[-1])[:3][::-1])
     with open(contest_cfg, 'r', encoding = '866') as f:
         for line in map(lambda x: x.strip(), f):
             if line.startswith('#'):
@@ -48,7 +48,7 @@ def get_problemset():
 
 def create_contest_info(script_path):
     contest_info = os.path.join(script_path, 'temp', 'contest_info.tex')
-    with open(contest_info, 'w') as w:
+    with open(contest_info, 'w', encoding = 'utf8') as w:
         contest_name, contest_date = get_contest_name_and_date()
         print('\def\\ID{{}}', file = w)
         print('\def\\NAME{{{}}}%'.format(contest_name), file = w)
@@ -58,7 +58,7 @@ def create_contest_info(script_path):
 
 def create_problemset_info(script_path):
     problemset_info = os.path.join(script_path, 'temp', 'problemset_info.tex')
-    with open(problemset_info, 'w') as w:
+    with open(problemset_info, 'w', encoding = 'utf8') as w:
         problemset = get_problemset()
         print('\Section{{{}}}{{{}}}'.format('limegreen', 'Easy'), file = w)
         print('\n'.join(map(lambda x: x.latex(), problemset)), file = w)

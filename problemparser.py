@@ -79,7 +79,8 @@ class ProblemParserPb(ProblemParser):
     def parse(self, problem_str):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
-        self._id, self._name = params[:2]
+        self._id = params[0]
+        self._name = params[2]
         print('Parsing problem {}: {}'.format(self._id, self._name))
         # This particular problem type targets everything under burunduk1/problems/yyyy-mm/<problem>.
         self._link = os.path.join('burunduk1', 'problems', params[3], params[2])
@@ -95,7 +96,9 @@ class ProblemParserProbdef(ProblemParser):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         # Trim " where applicable.
-        self._id, self._name, self._link = params[:3]
+        self._id = params[0]
+        self._name = re.split('[\/\\]', params[2])[-1]
+        self._link = params[2]
         print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])
         self._ml = ProblemParser.normalize_ml(params[-1])
