@@ -63,7 +63,7 @@ def create_problemset_info(script_path):
         print('\Section{{{}}}{{{}}}'.format('limegreen', 'Easy'), file = w)
         print('\n'.join(map(lambda x: x.latex(), problemset)), file = w)
         for problem in problemset:
-            shutil.copy(problem.statement(), os.path.join(
+            shutil.copy(problem.statements(), os.path.join(
                 script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name())))
 
 
