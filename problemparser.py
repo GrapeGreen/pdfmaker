@@ -49,7 +49,7 @@ class ProblemParser:
         return self._ml
 
     def statements(self):
-        root_link = os.path.join('D:', 'problems', self._link)
+        root_link = os.path.join('D:\problems', self._link)
         for curr_folder, dirs, files in os.walk(root_link):
             # TODO: search everywhere and not only in the first occurrence.
             if 'statement' in curr_folder:
