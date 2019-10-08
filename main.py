@@ -56,7 +56,7 @@ def create_problemset_info(script_path):
 def create_pdf(script_path):
     source_dir = os.path.join(script_path, 'temp')
     for _ in range(2):
-        subprocess.run("echo 'X' | pdflatex statement.tex 2> /dev/null")
+        subprocess.run("echo 'X' | pdflatex {}".format(os.path.join(source_dir, 'statement.tex')), shell = True)
 
 
 def clear_temp(script_path):
@@ -65,24 +65,24 @@ def clear_temp(script_path):
 
 
 def main():
+    script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
     try:
-        script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
-
         create_contest_info(script_path)
         create_problemset_info(script_path)
 
-        shutil.copy(os.path.join(script_path, 'src', 'statement.tex'),
-                    os.path.join(script_path, 'temp', 'statement.tex'))
+        for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
+            shutil.copy(os.path.join(script_path, 'src', file),
+                    os.path.join(script_path, 'temp', file))
 
         create_pdf(script_path)
 
         shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
                     os.path.join(os.getcwd(), 'statement.pdf'))
 
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
-    clear_temp(script_path)
+    #clear_temp(script_path)
 
 
 main()
