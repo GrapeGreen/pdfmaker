@@ -8,7 +8,7 @@ def get_contest_name_and_date():
         raise FileNotFoundError("There's no contest.cfg in {}.".format(os.getcwd()))
 
     date = '.'.join(re.findall('(\d{2})', os.getcwd())[:3][::-1])
-    with open(contest_cfg, 'r') as f:
+    with open(contest_cfg, 'r', encoding = '866') as f:
         for line in map(lambda x: x.strip(), f):
             if line.startswith('#'):
                 continue
@@ -25,7 +25,7 @@ def get_problemset():
         raise FileNotFoundError("There's no problemset.cfg in {}.".format(os.getcwd()))
 
     problemset = []
-    with open(problemset_cfg, 'r') as f:
+    with open(problemset_cfg, 'r', encoding = '866') as f:
         for line in map(lambda x: x.strip(), f):
             problem_type = problemparser.get_problem_type(line)
             if problem_type is None:

@@ -10,7 +10,6 @@ class ProblemType(Enum):
 
 class ProblemParser:
     def __init__(self, problem_str):
-        self.type = problem_type
         self._id, self._name, self._link = ["" for _ in range(3)]
         self._tl, self._ml = [0 for _ in range(2)]
         self.parse(problem_str)
@@ -94,7 +93,7 @@ class ProblemParserProbdef(ProblemParser):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         # Trim " where applicable.
-        self._id, self._name, self._link = [x[1:-1] for x in params[:3]]
+        self._id, self._name, self._link = params[:3]
         print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])
         self._ml = ProblemParser.normalize_ml(params[-1])
