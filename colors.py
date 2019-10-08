@@ -3,7 +3,7 @@ import os, re
 
 class Section:
     def __init__(self, section_str):
-        params = section_str.replace('#--', '').split('#')[0].split(',')
+        params = [x.strip() for x in section_str.replace('#--', '').split('#')[0].split(',')]
         if len(params) == 2:
             self._name, self._color = params
         elif len(params) == 1:
