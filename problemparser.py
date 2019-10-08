@@ -7,15 +7,32 @@ class ProblemType(Enum):
     pb = 1,
     probdef = 2
 
+    @staticmethod
+    def get_problem_type(problem_str):
+        # The list of supported types can be found in ProblemType enum.
+        for problem_type in ProblemType:
+            regex = '{}\d{{0,1}} *\("'.format(problem_type.name)
+            if re.match(regex, problem_str):
+                return problem_type
+        return None
+
 
 class ProblemParser:
-    def __init__(self, problem_str):
+    def __init__(self, problem_str, section):
+        self._section = section
         self._id, self._name, self._link = ["" for _ in range(3)]
         self._tl, self._ml = [0 for _ in range(2)]
         self.parse(problem_str)
 
     def parse(self, problem_str):
         raise NotImplementedError
+
+    @staticmethod
+    def create(problem_str, problem_type, section):
+        problem_class_name = 'ProblemParser{}'.format(problem_type.name.capitalize())
+        if problem_class_name not in globals():
+            raise NotImplementedError('No ProblemParser definition for {}.'.format(problem_type.name))
+        return globals()[problem_class_name](problem_str, section)
 
     @staticmethod
     def normalize_tl(tl):
@@ -38,15 +55,6 @@ class ProblemParser:
 
     def name(self):
         return self._name
-
-    def link(self):
-        return self._link
-
-    def tl(self):
-        return self._tl
-
-    def ml(self):
-        return self._ml
 
     def statements(self):
         root_link = os.path.join('D:\problems', self._link)
@@ -71,11 +79,11 @@ class ProblemParser:
         return '\probl{{{}}}{{{}}}{{{} sec}}{{{} mb}}'.format(
             self._name, self._id, self._tl, self._ml)
 
+    def section(self):
+        return self._section
+
 
 class ProblemParserPb(ProblemParser):
-    def __init__(self, problem_str):
-        super().__init__(problem_str)
-
     def parse(self, problem_str):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
@@ -89,9 +97,6 @@ class ProblemParserPb(ProblemParser):
 
 
 class ProblemParserProbdef(ProblemParser):
-    def __init__(self, problem_str):
-        super().__init__(problem_str)
-
     def parse(self, problem_str):
         # TODO: fix parameter parsing to support " and , inside declarations.
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
@@ -102,19 +107,3 @@ class ProblemParserProbdef(ProblemParser):
         print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])
         self._ml = ProblemParser.normalize_ml(params[-1])
-
-
-def get_problem_type(problem_str):
-    # The list of supported types can be found in ProblemType enum.
-    for problem_type in ProblemType:
-        regex = '{}\d{{0,1}} *\("'.format(problem_type.name)
-        if re.match(regex, problem_str):
-            return problem_type
-    return None
-
-
-def create(problem_str, problem_type):
-    problem_class_name = 'ProblemParser{}'.format(problem_type.name.capitalize())
-    if problem_class_name not in globals():
-        raise NotImplementedError('No ProblemParser definition for {}.'.format(problem_type.name))
-    return globals()[problem_class_name](problem_str)

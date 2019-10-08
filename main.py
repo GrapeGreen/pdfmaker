@@ -1,5 +1,5 @@
 import re, os, sys, shutil, subprocess
-import problemparser
+import problemparser, colors
 
 
 def verify_structure(script_path):
@@ -36,12 +36,15 @@ def get_problemset():
         raise FileNotFoundError("There's no problemset.cfg in {}.".format(os.getcwd()))
 
     problemset = []
+    section = colors.Section.default_section()
     with open(problemset_cfg, 'r', encoding = '866') as f:
         for line in map(lambda x: x.strip(), f):
-            problem_type = problemparser.get_problem_type(line)
+            if colors.Section.is_section(line):
+                section = colors.Section(line)
+            problem_type = problemparser.ProblemType.get_problem_type(line)
             if problem_type is None:
                 continue
-            problemset.append(problemparser.create(line, problem_type))
+            problemset.append(problemparser.ProblemParser.create(line, problem_type, section))
 
     return problemset
 
@@ -57,11 +60,19 @@ def create_contest_info(script_path):
 
 
 def create_problemset_info(script_path):
+    colors.Section.init_palette(script_path)
+
     problemset_info = os.path.join(script_path, 'temp', 'problemset_info.tex')
     with open(problemset_info, 'w', encoding = 'utf8') as w:
         problemset = get_problemset()
-        print('\Section{{{}}}{{{}}}'.format('limegreen', 'Easy'), file = w)
-        print('\n'.join(map(lambda x: x.latex(), problemset)), file = w)
+        if not problemset:
+            raise AssertionError('No problems found?')
+        print(problemset[0].section().latex(), file = w)
+        print(problemset[0].latex(), file = w)
+        for i in range(1, len(problemset)):
+            if problemset[i - 1].section() != problemset[i].section():
+                print(problemset[i].section().latex(), file = w)
+            print(problemset[i].latex(), file = w)
         for problem in problemset:
             shutil.copy(problem.statements(), os.path.join(
                 script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name())))
@@ -103,4 +114,5 @@ def main():
     #clear_temp(script_path)
 
 
-main()
+if __name__ == '__main__':
+    main()
