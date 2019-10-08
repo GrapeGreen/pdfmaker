@@ -1,0 +1,115 @@
+\documentclass[12pt,a4paper,oneside]{article}
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage[russian]{olymp}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{epigraph}
+\usepackage{color}
+
+\input{colors.tex}
+
+\usepackage[russian,colorlinks=true,urlcolor=red,linkcolor=oldlavender]{hyperref}
+\usepackage{enumerate}
+\usepackage{datetime}
+\usepackage{lastpage}
+\usepackage{import}
+\usepackage{verbatim}
+
+\input{contest_info.tex}
+
+\renewcommand{\t}{\texttt}
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+
+\binoppenalty=10000
+\relpenalty=10000
+\exhyphenpenalty=10000
+
+\newcommand{\ProblemLabel}{undefined}
+\newcommand{\ProblemTL}{undefined}
+\newcommand{\ProblemML}{undefined}
+\newcommand{\ProblemName}{undefined}
+
+\newcommand{\q}[1]{\langle #1 \rangle}
+\newcommand\NO[1]{\t{\##1}}
+\def\O{\mathcal{O}}
+\def\EPS{\varepsilon}
+\def\SO{\Rightarrow}
+\def\EQ{\Leftrightarrow}
+\def\t{\texttt}
+\def\XOR{\text{ {\raisebox{-2pt}{\ensuremath{\Hat{}}}} }}
+\def\LINE{\vspace*{-1em}\noindent \underline{\hbox to 1\textwidth{{ } \hfil{ } \hfil{ } }}}
+
+\def\probl#1#2#3#4{
+  \renewcommand{\ProblemName}{#1}
+  \renewcommand{\ProblemLabel}{#2}
+  \renewcommand{\ProblemTL}{#3}
+  \renewcommand{\ProblemML}{#4}
+  \input ./problems/#2.#1.tex
+}
+
+\newcommand{\Section}[2]{
+  \hbox{\hspace{1em}}
+  \vspace*{-2.5em}
+  \section*{\color{#1}{#2}}
+  \addcontentsline{toc}{section}{\color{#1}{#2}}
+  \vspace*{-0.5em}
+}
+
+\def\myindent{\hspace*{\parindent}\unskip}
+
+\contest
+{\NAME}%
+{\WHERE}%
+{\DATE}%
+
+%\sectionfont{\fontsize{8}{8}\selectfont}
+
+\def\compact{
+  \setlength{\parskip}{0pt}
+  \setlength{\itemsep}{0pt}
+}
+
+\begin{document}
+
+\vspace*{-2.8em}
+
+\tableofcontents
+
+\vspace*{0.8em}
+\LINE
+\vspace*{0.8em}
+
+%\pagebreak
+
+\noindent{}Вы не умеете читать/выводить данные, открывать файлы? Воспользуйтесь
+\href{http://acm.math.spbu.ru/~sk1/algo/sum/}{примерами}.
+\vspace{0.6em}
+
+%\url{http://acm.math.spbu.ru/~sk1/algo/input-output/io_export.cpp.html} \\
+\noindent{}В некоторых задачах большой ввод и вывод.
+Пользуйтесь \href{http://acm.math.spbu.ru/~sk1/algo/input-output/fread\_write\_export.cpp.html}{быстрым вводом-выводом}.
+
+\vspace{0.6em}
+\noindent{}\textbf{Обратите внимание}, что ввод-вывод во всех задачах стандартный.
+
+\vspace{0.6em}
+\noindent{}Задачи расположены в \textbf{произвольном порядке}!
+
+%\href{http://acm.math.spbu.ru/~sk1/algo/memory.cpp.html}{переопределение стандартного аллокатора} ускорит вашу программу.
+
+%\vspace{0.6em}
+%\noindent{}Обратите внимание на компилятор \t{GNU C++11 5.1.0 (TDM-GCC-64) inc},
+%который позволяет пользоваться \href{http://acm.math.spbu.ru/~sk1/algo/lib/optimization.h.html}{дополнительной библиотекой}.
+%Под ним можно сдать \href{http://acm.math.spbu.ru/~sk1/algo/lib/}{вот это}.
+
+\pagebreak
+
+\input{problemset_info.tex}
+
+\end{document}
+
