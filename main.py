@@ -76,7 +76,8 @@ def copy_sources(script_path):
 def create_pdf(script_path):
     source_dir = os.path.join(script_path, 'temp')
     for _ in range(2):
-        subprocess.run("echo 'X' | pdflatex {}".format(os.path.join(source_dir, 'statement.tex')), shell = True)
+        subprocess.run("cd {} && echo 'X' | pdflatex statement.tex".format(source_dir),
+                       shell = True)
     if not os.path.isfile(os.path.join(script_path, 'temp', 'statement.pdf')):
         raise FileNotFoundError("Unable to create statement.pdf from sources.")
     shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
