@@ -2,6 +2,17 @@ import re, os, sys, shutil, subprocess
 import problemparser
 
 
+def verify_structure(script_path):
+    if not os.path.isdir(os.path.join(script_path, 'temp')):
+        os.mkdir(os.path.join(script_path, 'temp'))
+    if not os.path.isdir(os.path.join(script_path, 'temp', 'problems')):
+        os.mkdir(os.path.join(script_path, 'temp', 'problems'))
+    for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
+        if not os.path.isfile(os.path.join(script_path, 'src', file)):
+            raise FileNotFoundError('No file called {} in {}.'.format(
+                file, os.path.join(script_path, 'src')))
+
+
 def get_contest_name_and_date():
     contest_cfg = os.path.join(os.getcwd(), 'contest.cfg')
     if not os.path.isfile(contest_cfg):
@@ -51,12 +62,25 @@ def create_problemset_info(script_path):
         problemset = get_problemset()
         print('\Section{{{}}}{{{}}}'.format('limegreen', 'Easy'), file = w)
         print('\n'.join(map(lambda x: x.latex(), problemset)), file = w)
+        for problem in problemset:
+            shutil.copy(problem.statement(), os.path.join(
+                script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name())))
+
+
+def copy_sources(script_path):
+    for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
+        shutil.copy(os.path.join(script_path, 'src', file),
+                    os.path.join(script_path, 'temp', file))
 
 
 def create_pdf(script_path):
     source_dir = os.path.join(script_path, 'temp')
     for _ in range(2):
         subprocess.run("echo 'X' | pdflatex {}".format(os.path.join(source_dir, 'statement.tex')), shell = True)
+    if not os.path.isfile(os.path.join(script_path, 'temp', 'statement.pdf')):
+        raise FileNotFoundError("Unable to create statement.pdf from sources.")
+    shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
+                os.path.join(os.getcwd(), 'statement.pdf'))
 
 
 def clear_temp(script_path):
@@ -67,18 +91,11 @@ def clear_temp(script_path):
 def main():
     script_path = os.path.dirname(os.path.realpath(sys.argv[0]))
     try:
+        verify_structure(script_path)
+        copy_sources(script_path)
         create_contest_info(script_path)
         create_problemset_info(script_path)
-
-        for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
-            shutil.copy(os.path.join(script_path, 'src', file),
-                    os.path.join(script_path, 'temp', file))
-
         create_pdf(script_path)
-
-        shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
-                    os.path.join(os.getcwd(), 'statement.pdf'))
-
     except Exception as e:
         print(e)
 
