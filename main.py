@@ -99,8 +99,7 @@ def create_pdf(script_path):
 
 def clear_temp(script_path):
     temp_dir = os.path.join(script_path, 'temp')
-    for file in os.listdir(temp_dir):
-        os.remove(os.path.join(temp_dir, file))
+    shutil.rmtree(temp_dir)
 
 
 def main():
