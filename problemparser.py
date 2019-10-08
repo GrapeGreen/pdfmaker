@@ -97,7 +97,7 @@ class ProblemParserProbdef(ProblemParser):
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         # Trim " where applicable.
         self._id = params[0]
-        self._name = re.split('[\/\\]', params[2])[-1]
+        self._name = re.split(r'[\\\/]', params[2])[-1]
         self._link = params[2]
         print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])

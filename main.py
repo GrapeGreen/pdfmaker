@@ -18,7 +18,7 @@ def get_contest_name_and_date():
     if not os.path.isfile(contest_cfg):
         raise FileNotFoundError("There's no contest.cfg in {}.".format(os.getcwd()))
 
-    date = '.'.join(re.findall('(\d{2})', re.split('[\/\\]', os.getcwd())[-1])[:3][::-1])
+    date = '.'.join(re.findall('(\d{2})', re.split(r'[\\\/]', os.getcwd())[-1])[:3][::-1])
     with open(contest_cfg, 'r', encoding = '866') as f:
         for line in map(lambda x: x.strip(), f):
             if line.startswith('#'):
