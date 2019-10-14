@@ -67,6 +67,12 @@ class ProblemParser:
                 if len(files) == 1:
                     return os.path.join(curr_folder, files[0])
                 if len(files) > 1:
+                    # In case of two source files one of them might be the english translation.
+                    if len(files) == 2 and any(x.endswith('.en.tex') for x in files):
+                        candidates = [x for x in files if not x.endswith('.en.tex')]
+                        if candidates:
+                            return os.path.join(curr_folder, candidates[0])
+
                     raise NotImplementedError("There is more than one statement "
                                               "file for problem {}. Currently we "
                                               "are unable to decide on such cases."
