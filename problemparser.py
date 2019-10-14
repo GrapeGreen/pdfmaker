@@ -11,7 +11,7 @@ class ProblemType(Enum):
     def get_problem_type(problem_str):
         # The list of supported types can be found in ProblemType enum.
         for problem_type in ProblemType:
-            regex = '{}\d{{0,1}} *\("'.format(problem_type.name)
+            regex = '{}\d{{0,1}}\s*\("'.format(problem_type.name)
             if re.match(regex, problem_str):
                 return problem_type
         return None

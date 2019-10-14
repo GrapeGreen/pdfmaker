@@ -24,7 +24,7 @@ def get_contest_name_and_date():
         for line in map(lambda x: x.strip(), f):
             if line.startswith('#'):
                 continue
-            regex_result = re.findall('^ContestName *:= *(.*)$', line.split('#')[0])
+            regex_result = re.findall('^ContestName\s*:=\s*(.*)$', line.split('#')[0])
             if regex_result:
                 return regex_result[0].strip(), date
 

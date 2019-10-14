@@ -8,6 +8,8 @@ class Section:
             self._name, self._color = params
         elif len(params) == 1:
             self._name = params[0]
+            if self._name not in Section.predefined_sections:
+                raise AssertionError('Section {} does not specify a color.'.format(self._name))
             self._color = Section.predefined_sections[self._name]
         else:
             raise AssertionError('Expected 1 or 2 arguments in Section declaration, found {}.'.format(len(params)))
