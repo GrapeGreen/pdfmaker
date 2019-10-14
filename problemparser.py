@@ -63,7 +63,7 @@ class ProblemParser:
             if 'statement' in curr_folder:
                 files = [x for x in files if x.endswith('.tex')]
                 if len(files) == 0:
-                    break
+                    continue
                 if len(files) == 1:
                     return os.path.join(curr_folder, files[0])
                 if len(files) > 1:
