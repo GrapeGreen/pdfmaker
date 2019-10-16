@@ -1,6 +1,12 @@
 import re, os, sys, shutil, subprocess
 import problemparser, colors
 import traceback
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--upload', '-u', help = 'upload to /trains', action = 'store_true')
+args = parser.parse_args()
 
 
 def verify_structure(script_path):
@@ -92,7 +98,7 @@ def create_pdf(script_path):
     subprocess.run("cd {} && echo 'X' | pdflatex statement.tex | grep 'Output written'".format(source_dir),
                    shell = True)
     if not os.path.isfile(os.path.join(script_path, 'temp', 'statement.pdf')):
-        raise FileNotFoundError("Unable to create statement.pdf from sources.")
+        raise FileNotFoundError('Unable to create statement.pdf from sources.')
     shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
                 os.path.join(os.getcwd(), 'statement.pdf'))
 
@@ -100,6 +106,14 @@ def create_pdf(script_path):
 def clear_temp(script_path):
     temp_dir = os.path.join(script_path, 'temp')
     shutil.rmtree(temp_dir)
+
+
+def upload_pdf():
+    pdf_path = os.path.join(os.getcwd(), 'statement.pdf')
+    date = '.'.join(re.findall('(\d{2})', re.split(r'[\\\/]', os.getcwd())[-1])[:3][::-1])
+    subprocess.run('pscp -P 220 {} {}@acm.math.spbu.ru:/var/www/acm/trains/{}.pdf'.format(
+        pdf_path, os.getlogin(), date
+    ), shell = True)
 
 
 def main():
@@ -110,6 +124,8 @@ def main():
         create_contest_info(script_path)
         create_problemset_info(script_path)
         create_pdf(script_path)
+        if args.upload:
+            upload_pdf()
     except Exception as e:
         traceback.print_exc()
     finally:
