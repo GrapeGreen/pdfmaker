@@ -110,7 +110,7 @@ def clear_temp(script_path):
 
 def upload_pdf():
     pdf_src = os.path.join(os.getcwd(), 'statement.pdf')
-    date = '.'.join(re.findall('(\d{2})', re.split(r'[\\\/]', os.getcwd())[-1])[:3][::-1])
+    date = re.split(r'[\\\/]', os.getcwd())[-1]
     pdf_target = '/var/www/acm/trains/{}.pdf'.format(date)
     print('Uploading {} to {}'.format(pdf_src, pdf_target), file = sys.stderr)
     subprocess.run('pscp -P 220 {} {}@acm.math.spbu.ru:{}'.format(
