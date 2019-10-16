@@ -1,4 +1,4 @@
-import re, os
+import re, os, sys
 from enum import Enum
 
 
@@ -23,6 +23,7 @@ class ProblemParser:
         self._id, self._name, self._link = ["" for _ in range(3)]
         self._tl, self._ml = [0 for _ in range(2)]
         self.parse(problem_str)
+        print('Parsing problem {}: {}'.format(self._id, self._name), file=sys.stderr)
 
     def parse(self, problem_str):
         raise NotImplementedError
@@ -94,7 +95,6 @@ class ProblemParserPb(ProblemParser):
         params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
         self._id = params[0]
         self._name = params[2]
-        print('Parsing problem {}: {}'.format(self._id, self._name))
         # This particular problem type targets everything under burunduk1/problems/yyyy-mm/<problem>.
         self._link = os.path.join('burunduk1', 'problems', params[3], params[2])
         self._tl = ProblemParser.normalize_tl(params[-2])
@@ -109,6 +109,5 @@ class ProblemParserProbdef(ProblemParser):
         self._id = params[0]
         self._name = re.split(r'[\\\/]', params[2])[-1]
         self._link = params[2]
-        print('Parsing problem {}: {}'.format(self._id, self._name))
         self._tl = ProblemParser.normalize_tl(params[-2])
         self._ml = ProblemParser.normalize_ml(params[-1])
