@@ -1,5 +1,6 @@
 import re, os, sys
 from enum import Enum
+import re_helper
 
 
 class ProblemType(Enum):
@@ -23,7 +24,7 @@ class ProblemParser:
         self._id, self._name, self._link = ["" for _ in range(3)]
         self._tl, self._ml = [0 for _ in range(2)]
         self.parse(problem_str)
-        print('Parsing problem {}: {}'.format(self._id, self._name), file=sys.stderr)
+        print('Parsing problem {}: {}\n{}'.format(self._id, self._name, self.latex()), file=sys.stderr)
 
     def parse(self, problem_str):
         raise NotImplementedError
@@ -91,23 +92,42 @@ class ProblemParser:
 
 class ProblemParserPb(ProblemParser):
     def parse(self, problem_str):
-        # TODO: fix parameter parsing to support " and , inside declarations.
-        params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
-        self._id = params[0]
-        self._name = params[2]
+        match = re_helper.create_regex(
+            'pb\d?',
+            re_helper.OPENING_BRACKET,
+            *([re_helper.QUOTED_STRING,
+            re_helper.COMMA] * 4),
+            re_helper.INT_VALUE,
+            re_helper.COMMA,
+            re_helper.INT_VALUE,
+            re_helper.CLOSING_BRACKET,
+            re_helper.COMMENT
+        ).fullmatch(problem_str)
+        if match is None:
+            raise AssertionError('Line\n{}\nis not formatted correctly.'.format(problem_str))
+        self._id, self._name = match.group(1, 3)
         # This particular problem type targets everything under burunduk1/problems/yyyy-mm/<problem>.
-        self._link = os.path.join('burunduk1', 'problems', params[3], params[2])
-        self._tl = ProblemParser.normalize_tl(params[-2])
-        self._ml = ProblemParser.normalize_ml(params[-1])
+        self._link = os.path.join('burunduk1', 'problems', *match.group(4, 3))
+        self._tl = ProblemParser.normalize_tl(match.group(5))
+        self._ml = ProblemParser.normalize_ml(match.group(6))
 
 
 class ProblemParserProbdef(ProblemParser):
     def parse(self, problem_str):
-        # TODO: fix parameter parsing to support " and , inside declarations.
-        params = [x.strip().strip('"') for x in re.findall('\((.*?)\)', problem_str)[0].split(',')]
-        # Trim " where applicable.
-        self._id = params[0]
-        self._name = re.split(r'[\\\/]', params[2])[-1]
-        self._link = params[2]
-        self._tl = ProblemParser.normalize_tl(params[-2])
-        self._ml = ProblemParser.normalize_ml(params[-1])
+        match = re_helper.create_regex(
+            'probdef\d?',
+            re_helper.OPENING_BRACKET,
+            *([re_helper.QUOTED_STRING,
+               re_helper.COMMA] * 3),
+            re_helper.INT_VALUE,
+            re_helper.COMMA,
+            re_helper.INT_VALUE,
+            re_helper.CLOSING_BRACKET,
+            re_helper.COMMENT
+        ).fullmatch(problem_str)
+        if match is None:
+            raise AssertionError('Line\n{}\nis not formatted correctly.'.format(problem_str))
+        self._id, self._link = match.group(1, 3)
+        self._name = re.split(r'[\\\/]', match.group(3))[-1]
+        self._tl = ProblemParser.normalize_tl(match.group(4))
+        self._ml = ProblemParser.normalize_ml(match.group(5))
