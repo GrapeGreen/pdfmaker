@@ -66,6 +66,13 @@ def create_contest_info(script_path):
         print('\def\\DATE{{{}}}%'.format(contest_date), file = w)
 
 
+def remove_includegraphics(file_path):
+    with open(file_path, 'r', encoding='utf8') as f:
+        data = f.read()
+    with open(file_path, 'w', encoding='utf8') as w:
+        print(re.sub(r'\\includegraphics\s*{.*?}', '', data), file=w)
+
+
 def create_problemset_info(script_path):
     colors.Section.init_palette(script_path)
 
@@ -81,18 +88,16 @@ def create_problemset_info(script_path):
                 print(problemset[i].section().latex(), file = w)
             print(problemset[i].latex(), file = w)
         for problem in problemset:
-            shutil.copy(problem.statements(), os.path.join(
-                script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name())))
+            dest = os.path.join(
+                script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name()))
+            shutil.copy(problem.statements(), dest)
+            remove_includegraphics(dest)
 
 
 def copy_sources(script_path):
     for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
         src, dest = [os.path.join(script_path, x, file) for x in ['src', 'temp']]
         shutil.copy(src, dest)
-        with open(dest, 'r') as f:
-            data = f.read()
-        with open(dest, 'w') as w:
-            f.write(re.sub(r'\\includegraphics\s*{.*?}', '', data))
 
 
 def create_pdf(script_path):
