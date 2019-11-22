@@ -82,6 +82,7 @@ def create_problemset_info(script_path):
             print(problemset[i].latex(), file = w)
         for problem in problemset:
             dest_folder = os.path.join(script_path, 'temp', 'problems', problem.id())
+            os.mkdir(dest_folder)
             shutil.copy(problem.statements(), os.path.join(dest_folder, '{}.tex'.format(problem.name())))
             for picture in problem.graphics():
                 print(picture)
