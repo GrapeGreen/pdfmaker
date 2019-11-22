@@ -92,7 +92,7 @@ def copy_sources(script_path):
         with open(dest, 'r') as f:
             data = f.read()
         with open(dest, 'w') as w:
-            f.write(re.sub(r'\\includegraphics\s*{.*?}', '', data), file = w)
+            f.write(re.sub(r'\\includegraphics\s*{.*?}', '', data))
 
 
 def create_pdf(script_path):
