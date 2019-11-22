@@ -66,6 +66,19 @@ def create_contest_info(script_path):
         print('\def\\DATE{{{}}}%'.format(contest_date), file = w)
 
 
+def alter_graphics(id, file_path):
+    def replacer(match):
+        # <1>{<2>}
+        return '{}{{{}}}'.format(
+            match.group(1),
+            os.path.join('.', 'problems', id, os.path.split(match.group(2))[1])
+        )
+    with open(file_path, 'r', encoding = 'utf8') as f:
+        data = f.read()
+    with open(file_path, 'w', encoding = 'utf8') as w:
+        print(re.sub(r'(\\includegraphics.*?){\s*(.+?)\s*}', replacer, data), file = w)
+
+
 def create_problemset_info(script_path):
     colors.Section.init_palette(script_path)
 
@@ -83,10 +96,12 @@ def create_problemset_info(script_path):
         for problem in problemset:
             dest_folder = os.path.join(script_path, 'temp', 'problems', problem.id())
             os.mkdir(dest_folder)
-            shutil.copy(problem.statements(), os.path.join(dest_folder, '{}.tex'.format(problem.name())))
+            dest_statement = os.path.join(dest_folder, '{}.tex'.format(problem.name()))
+            shutil.copy(problem.statements(), dest_statement)
             for picture in problem.graphics():
                 print(picture)
                 shutil.copy(picture, os.path.join(dest_folder, os.path.split(picture)[1]))
+            alter_graphics(problem.id(), dest_statement)
 
 
 def copy_sources(script_path):
