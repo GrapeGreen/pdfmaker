@@ -87,8 +87,12 @@ def create_problemset_info(script_path):
 
 def copy_sources(script_path):
     for file in ['statement.tex', 'colors.tex', 'olymp.sty']:
-        shutil.copy(os.path.join(script_path, 'src', file),
-                    os.path.join(script_path, 'temp', file))
+        src, dest = [os.path.join(script_path, x, file) for x in ['src', 'temp']]
+        shutil.copy(src, dest)
+        with open(dest, 'r') as f:
+            data = f.read()
+        with open(dest, 'w') as w:
+            f.write(re.sub(r'\\includegraphics\s*{.*?}', '', data), file = w)
 
 
 def create_pdf(script_path):
