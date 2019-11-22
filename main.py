@@ -81,8 +81,11 @@ def create_problemset_info(script_path):
                 print(problemset[i].section().latex(), file = w)
             print(problemset[i].latex(), file = w)
         for problem in problemset:
-            shutil.copy(problem.statements(), os.path.join(
-                script_path, 'temp', 'problems', '{}.{}.tex'.format(problem.id(), problem.name())))
+            dest_folder = os.path.join(script_path, 'temp', 'problems', problem.id())
+            shutil.copy(problem.statements(), os.path.join(dest_folder, '{}.tex'.format(problem.name())))
+            for picture in problem.graphics():
+                print(picture)
+                shutil.copy(picture, os.path.join(dest_folder, os.path.split(picture)[1]))
 
 
 def copy_sources(script_path):
@@ -98,6 +101,8 @@ def create_pdf(script_path):
     subprocess.run("cd {} && echo 'X' | pdflatex statement.tex | grep 'Output written'".format(source_dir),
                    shell = True)
     if not os.path.isfile(os.path.join(script_path, 'temp', 'statement.pdf')):
+        shutil.move(os.path.join(script_path, 'temp', 'statement.log'),
+                    os.path.join(os.getcwd(), 'statement.log'))
         raise FileNotFoundError('Unable to create statement.pdf from sources.')
     shutil.move(os.path.join(script_path, 'temp', 'statement.pdf'),
                 os.path.join(os.getcwd(), 'statement.pdf'))

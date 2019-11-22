@@ -82,6 +82,13 @@ class ProblemParser:
         raise FileNotFoundError("Couldn't find any statement files"
                                 " for problem {}.".format(self._link))
 
+    def graphics(self):
+        link = self.statements()
+        with open(link, 'r', encoding = 'utf8') as f:
+            pics = [os.path.join(os.path.split(link)[0], x) for x in
+                    re.findall(r'\\includegraphics(?:\s*\[.*?\]\s*)*{\s*(.+?)\s*}', f.read())]
+            return pics
+
     def latex(self):
         return '\probl{{{}}}{{{}}}{{{} sec}}{{{} mb}}'.format(
             self._name, self._id, self._tl, self._ml)
