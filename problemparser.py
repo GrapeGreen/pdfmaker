@@ -60,27 +60,27 @@ class ProblemParser:
 
     def statements(self):
         root_link = os.path.join('D:\problems', self._link)
+        sources = []
         for curr_folder, dirs, files in os.walk(root_link):
-            # TODO: search everywhere and not only in the first occurrence.
             if 'statement' in curr_folder:
-                files = [x for x in files if x.endswith('.tex')]
-                if len(files) == 0:
-                    continue
-                if len(files) == 1:
-                    return os.path.join(curr_folder, files[0])
-                if len(files) > 1:
-                    # In case of two source files one of them might be the english translation.
-                    if len(files) == 2 and any(x.endswith('.en.tex') for x in files):
-                        candidates = [x for x in files if not x.endswith('.en.tex')]
-                        if candidates:
-                            return os.path.join(curr_folder, candidates[0])
-
-                    raise NotImplementedError("There is more than one statement "
-                                              "file for problem {}. Currently we "
-                                              "are unable to decide on such cases."
-                                              .format(self._link))
-        raise FileNotFoundError("Couldn't find any statement files"
-                                " for problem {}.".format(self._link))
+                files = [os.path.join(curr_folder, x) for x in files if x.endswith('.tex')]
+                # In case of two source files one of them might be the english translation.
+                if len(files) == 2 and any(x.endswith('.en.tex') for x in files):
+                    candidates = [x for x in files if not x.endswith('.en.tex')]
+                    if candidates:
+                        sources.append(os.path.join(curr_folder, candidates[0]))
+                else:
+                    sources.extend(files)
+        if not sources:
+            raise FileNotFoundError("Couldn't find any statement files"
+                                    " for problem {}.".format(self._link))
+        sources.sort()
+        if len(sources) == 1:
+            return sources[0]
+        print('Pdfmaker found more than one tex source for problem {}:'.format(self.id()))
+        print('[\n\t{}\n]'.format('\n,\t'.join(sources)))
+        print('Input a number from 1 to {} to determine which source to use.'.format(len(sources)))
+        return sources[int(input()) - 1]
 
     def graphics(self):
         link = self.statements()
