@@ -69,7 +69,9 @@ def create_contest_info(script_path):
 def alter_graphics(id, file_path):
     def replacer(match):
         # We don't support pictures that are generated on the fly.
-        if not any(match.group(2).endswith(x) for x in ['.jpg', '.jpeg', '.png']):
+        pic = os.path.join(os.path.split(file_path)[0], match.group(2))
+        if not any(match.group(2).endswith(x) for x in ['.jpg', '.jpeg', '.png']) \
+            and not any(os.path.isfile(pic + x) for x in ['.jpg', '.jpeg', '.png']):
             return ''
         # <1>{<2>}
         return '{}{{{}}}'.format(
