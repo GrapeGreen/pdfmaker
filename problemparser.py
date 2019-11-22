@@ -25,6 +25,7 @@ class ProblemParser:
         self._tl, self._ml = [0 for _ in range(2)]
         self.parse(problem_str)
         print('Parsing problem {}: {}\n{}'.format(self._id, self._name, self.latex()), file=sys.stderr)
+        self._statements = self.find_statements()
 
     def parse(self, problem_str):
         raise NotImplementedError
@@ -59,6 +60,9 @@ class ProblemParser:
         return self._name
 
     def statements(self):
+        return self._statements
+
+    def find_statements(self):
         root_link = os.path.join('D:\problems', self._link)
         sources = []
         for curr_folder, dirs, files in os.walk(root_link):
@@ -78,7 +82,7 @@ class ProblemParser:
         if len(sources) == 1:
             return sources[0]
         print('Pdfmaker found more than one tex source for problem {}:'.format(self.id()))
-        print('[\n\t{}\n]'.format('\n,\t'.join(sources)))
+        print('[\n\t{}\n]'.format(',\n\t'.join(sources)))
         print('Input a number from 1 to {} to determine which source to use.'.format(len(sources)))
         return sources[int(input()) - 1]
 
