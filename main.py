@@ -68,10 +68,15 @@ def create_contest_info(script_path):
 
 def alter_graphics(id, file_path):
     def replacer(match):
+        # We don't support pictures that are generated on the fly.
+        if not any(match.group(2).endswith(x) for x in ['.jpg', '.jpeg', '.png']):
+            return ''
         # <1>{<2>}
         return '{}{{{}}}'.format(
             match.group(1),
-            os.path.join('.', 'problems', id, os.path.split(match.group(2))[1])
+            # os.path.join produces backslashes (\) which are incorrectly treated by pdflatex.
+            # So we force forward slashes (/) here.
+            './problems/{}/{}'.format(id, os.path.split(match.group(2))[1])
         )
     with open(file_path, 'r', encoding = 'utf8') as f:
         data = f.read()
@@ -99,7 +104,6 @@ def create_problemset_info(script_path):
             dest_statement = os.path.join(dest_folder, '{}.tex'.format(problem.name()))
             shutil.copy(problem.statements(), dest_statement)
             for picture in problem.graphics():
-                print(picture)
                 shutil.copy(picture, os.path.join(dest_folder, os.path.split(picture)[1]))
             alter_graphics(problem.id(), dest_statement)
 
